@@ -45,10 +45,11 @@ def main():
         logger.error('Invalid input file path.')
         close()
 
+    # create array for the list o' books, grab line by line, encode to ascii
     listpath = open(args.infile, 'r')
     booklist = []
     for line in listpath:
-        booklist.append(line.strip())
+        booklist.append(line.strip().decode('ascii', 'ignore'))
 
     # done grabbing from the file, so we can close it
     listpath.close()
