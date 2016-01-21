@@ -11,27 +11,41 @@ import os
 import sys
 import argparse
 import signal
+import logging
 from lxml import html
 import requests
 
 
 def main():
-    """Handles user input."""
+    """Does most of the magic."""
     # parse them arguments
     cli_parse = argparse.ArgumentParser(
         description='Performs a multi-search on bookfinder.com.')
 
-    cli_parse.add_argument('path', action='store',
+    cli_parse.add_argument('infile', action='store',
                            help='path to your list of books')
+
+    cli_parse.add_argument('outfile', action='store',
+                           help='path you want to output to')
 
     args = cli_parse.parse_args()
 
-    # validate file presence/validity
-    if not os.path.isfile(args.path):
-        print 'invalid path'
-        close(True)
+    # using logger to output to stdout + file; wipe file first
+    open(args.outfile, 'w').close()
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logger = logging.getLogger('bookfinder')
+    loghandler = logging.FileHandler(args.outfile)
+    logger.addHandler(loghandler)
 
-    listpath = open(args.path, 'r')
+    # disable requests' logging, because we don't care
+    logging.getLogger('requests').setLevel(logging.WARNING)
+
+    # validate file presence/validity
+    if not os.path.isfile(args.infile):
+        logger.error('Invalid input file path.')
+        close()
+
+    listpath = open(args.infile, 'r')
     booklist = []
     for line in listpath:
         booklist.append(line.strip())
@@ -39,9 +53,8 @@ def main():
     # done grabbing from the file, so we can close it
     listpath.close()
 
-    # TODO: start loop here
     for book in booklist:
-        print '%s:' % book
+        logger.info('%s:', book)
 
         payload = {
             'author': '',
@@ -80,7 +93,7 @@ def main():
         newlink = parser.xpath(
             '//*[@id="bd"]/table/tr/td[1]/table/tr[2]/td[4]/div/span/a/@href')[0]
         newlink = shorten(newlink)
-        print '\tNew: %s at %s - %s' % (newprice, newseller, newlink)
+        logger.info('\tNew: %s at %s - %s', newprice, newseller, newlink)
 
         usedprice = parser.xpath(
             '//*[@id="bd"]/table/tr/td[5]/table/tr[2]/td[4]/div/span/a/text()')[0]
@@ -90,7 +103,7 @@ def main():
         usedlink = parser.xpath(
             '//*[@id="bd"]/table/tr/td[5]/table/tr[2]/td[4]/div/span/a/@href')[0]
         usedlink = shorten(usedlink)
-        print '\tUsed: %s at %s - %s' % (usedprice, usedseller, usedlink)
+        logger.info('\tUsed: %s at %s - %s', usedprice, usedseller, usedlink)
 
 
 def shorten(link):
@@ -103,15 +116,12 @@ def shorten(link):
     return requests.get('https://is.gd/create.php', params=params).content
 
 
-def close(error):
-    """Handles sigint/normal program exit"""
-    if error is False:
-        sys.exit(0)
-    else:
-        sys.exit(1)
+def close():
+    """Handles sigint/unexpected program exit"""
+    sys.exit(1)
 
 if __name__ == "__main__":
     # make a SIGINT handler for ctrl-c, etc
-    signal.signal(signal.SIGINT, exit)
+    signal.signal(signal.SIGINT, close)
     # call main
     main()
