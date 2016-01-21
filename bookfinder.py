@@ -85,25 +85,33 @@ def main():
         # using some xpath magic, get the useful stuff from the page
         parser = html.fromstring(request.text)
 
-        newprice = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[1]/table/tr[2]/td[4]/div/span/a/text()')[0]
-        newseller = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[1]/table/tr[2]/td[2]//a/img/@src')[0]
-        newseller = newseller[58:].partition('.')[0].replace('_', ' ').capitalize()
-        newlink = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[1]/table/tr[2]/td[4]/div/span/a/@href')[0]
-        newlink = shorten(newlink)
-        logger.info('\tNew: %s at %s - %s', newprice, newseller, newlink)
-
-        usedprice = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[5]/table/tr[2]/td[4]/div/span/a/text()')[0]
-        usedseller = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[5]/table/tr[2]/td[2]/span[2]/a/img/@src')[0]
-        usedseller = usedseller[58:].partition('.')[0].replace('_', ' ').capitalize()
-        usedlink = parser.xpath(
-            '//*[@id="bd"]/table/tr/td[5]/table/tr[2]/td[4]/div/span/a/@href')[0]
-        usedlink = shorten(usedlink)
-        logger.info('\tUsed: %s at %s - %s', usedprice, usedseller, usedlink)
+        # get the best 3 results for new, then the best 3 for used
+        for i in range(2, 5):
+            try:
+                newprice = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
+                newseller = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
+                newseller = newseller[58:].partition('.')[0].replace('_', ' ').capitalize()
+                newlink = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
+                newlink = shorten(newlink)
+                logger.info('\tNew: %s at %s - %s', newprice, newseller, newlink)
+            except:
+                break
+        for i in range(2, 5):
+            try:
+                usedprice = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
+                usedseller = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
+                usedseller = usedseller[58:].partition('.')[0].replace('_', ' ').capitalize()
+                usedlink = parser.xpath(
+                    '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
+                usedlink = shorten(usedlink)
+                logger.info('\tUsed: %s at %s - %s', usedprice, usedseller, usedlink)
+            except:
+                break
 
 
 def shorten(link):
