@@ -122,7 +122,7 @@ def shorten(link):
         'url': link
     }
     # is.gd is used because it doesn't require auth/is free/no ads
-    return requests.get('https://is.gd/create.php', params=params).content
+    return requests.get('http://is.gd/create.php', params=params).content
 
 
 def close():
