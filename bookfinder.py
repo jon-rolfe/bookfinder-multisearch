@@ -93,7 +93,7 @@ def main():
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
                 newseller = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
-                newseller = newseller[58:].partition('.')[0].replace('_', ' ').capitalize()
+                newseller = newseller[52:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
                 newlink = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
                 newlink = shorten(newlink)
@@ -106,7 +106,7 @@ def main():
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
                 usedseller = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
-                usedseller = usedseller[58:].partition('.')[0].replace('_', ' ').capitalize()
+                usedseller = usedseller[52:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
                 usedlink = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
                 usedlink = shorten(usedlink)
