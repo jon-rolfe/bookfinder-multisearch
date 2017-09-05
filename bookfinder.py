@@ -57,6 +57,12 @@ def main():
     for book in booklist:
         logger.info('%s:', book)
 
+        # if input is an ISBN, skip it (future feature)
+        if book.isnumeric():
+            logger.info('\tISBNs currently don\'t work - skipping entry')
+            continue
+
+        # construct search query
         payload = {
             'author': '',
             'title': '',
@@ -81,6 +87,8 @@ def main():
 
         # select the first result from the list and get that page
         parser = html.fromstring(request.text)
+
+
         request = requests.get("http:" + parser.xpath('//*[@id="bd"]/ul[1]/li[1]/span/a/@href')[0])
 
         # using some xpath magic, get the useful stuff from the page
@@ -90,7 +98,7 @@ def main():
         # get the best 3 results for new books
         for i in range(2, 5):
             try:
-                logger.log(10, "trying to parse new books, run %i", i)
+                logger.log(10, "trying to parse new books, run %i", (i - 1))
                 newprice = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
                 logger.log(10, "parsed price as %s", newprice)
@@ -116,7 +124,7 @@ def main():
         # get the best 3 results for used books
         for i in range(2, 5):
             try:
-                logger.log(10, "trying to parse used books, run %i", i)
+                logger.log(10, "trying to parse used books, run %i", (i - 1))
                 usedprice = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
 
