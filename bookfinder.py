@@ -81,37 +81,63 @@ def main():
 
         # select the first result from the list and get that page
         parser = html.fromstring(request.text)
-        request = requests.get(parser.xpath('//*[@id="bd"]/ul/li[1]/span/a/@href')[0])
+        request = requests.get("http:" + parser.xpath('//*[@id="bd"]/ul[1]/li[1]/span/a/@href')[0])
 
         # using some xpath magic, get the useful stuff from the page
         parser = html.fromstring(request.text)
+        logger.log(10, "request and parsing successful")
 
-        # get the best 3 results for new, then the best 3 for used
+        # get the best 3 results for new books
         for i in range(2, 5):
             try:
+                logger.log(10, "trying to parse new books, run %i", i)
                 newprice = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
+                logger.log(10, "parsed price as %s", newprice)
+
                 newseller = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
-                newseller = newseller[52:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
-                newlink = parser.xpath(
+                logger.log(10, "parsed seller as %s", newseller)
+                # turn the seller into something legible
+                newseller = newseller[58:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
+                logger.log(10, "parsed seller as %s", newseller)
+
+                newlink = "http:" + parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
+                logger.log(10, "parsed link as %s", newlink)
                 newlink = shorten(newlink)
+                logger.log(10, "shortened link")
+
                 logger.info('\tNew: %s at %s - %s', newprice, newseller, newlink)
-            except:
+
+            except Exception as err:
+                logger.log(10, "error (new) - %s", err)
                 break
+        # get the best 3 results for used books
         for i in range(2, 5):
             try:
+                logger.log(10, "trying to parse used books, run %i", i)
                 usedprice = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/text()' % i)[0]
+
+                logger.log(10, "parsed price")
                 usedseller = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[2]//a/img/@src' % i)[0]
-                usedseller = usedseller[52:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
-                usedlink = parser.xpath(
+
+                logger.log(10, "parsed seller pt. 1")
+                usedseller = usedseller[58:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
+                logger.log(10, "parsed seller pt. 2")
+
+                usedlink = "http:" + parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
+                logger.log(10, "parsed link as %s", newlink)
                 usedlink = shorten(usedlink)
+                logger.log(10, "shortened link")
+
                 logger.info('\tUsed: %s at %s - %s', usedprice, usedseller, usedlink)
-            except:
+
+            except Exception as err:
+                logger.log(10, "error (used) - %s", err)
                 break
 
 
@@ -124,8 +150,7 @@ def shorten(link):
     # is.gd is used because it doesn't require auth/is free/no ads
     return requests.get('http://is.gd/create.php', params=params).content
 
-
-def close():
+def close(*args):
     """Handles sigint/unexpected program exit"""
     sys.exit(1)
 
