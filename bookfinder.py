@@ -59,14 +59,14 @@ def main():
 
         payload = {
             'author': '',
-            'title': book,
+            'title': '',
             'submitBtn': 'Search',
             'new_used': '*',
             'destination': 'us',
             'currency': 'USD',
             'binding': '*',
             'isbn': '',
-            'keywords': '',
+            'keywords': book,
             'minprice': '',
             'maxprice': '',
             'min_year': '',

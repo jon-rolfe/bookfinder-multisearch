@@ -7,7 +7,7 @@ Update for 2017: As it turns out, I have a ridiculous number of books to buy
 *every* semester.
 
 # Installation
-bookfinder-multisearch is written in Python 2.7. It requires:
+bookfinder-multisearch is written for Python 2.7. It requires:
 * Python 2.7.9 or greater
 * Requests
 * lxml
@@ -17,15 +17,15 @@ bookfinder-multisearch is written in Python 2.7. It requires:
 # Usage
 Lay out your list like this:
 ```
-Book Title One: No Author, Just The Title
-Book Title Two: Yeah, Just The Title
-Book Title Three: I Told You This Was Quickly Hacked Together
+Book Title And Whatever Relevant Keywords
+Jurassic Park 1990 Crichton
+Book Title Three: Improved Search Edition
 etc.
 ```
 
 Then, run:
 
-> python bookfinder.py <path_to_book_file>
+> python bookfinder.py <path_to_file_with_list_of_books> <output_file>
 
 Voila. Every once-in-a-while the script will fail because bookfinder.com did
 something funky. Try re-running the script before pronouncing it broken.
