@@ -8,7 +8,7 @@ Update for 2017: As it turns out, I have a ridiculous number of books to buy
 
 # Installation
 bookfinder-multisearch is written for Python 2.7. It requires:
-* Python 2.7.9 or greater
+* Python 2.7.13 or greater
 * Requests
 * lxml
 * argparse
