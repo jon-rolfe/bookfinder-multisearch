@@ -49,7 +49,7 @@ def main():
     listpath = open(args.infile, 'r')
     booklist = []
     for line in listpath:
-        booklist.append(line.strip().decode('ascii', 'ignore'))
+        booklist.append(line.strip())
 
     # done grabbing from the file, so we can close it
     listpath.close()
@@ -83,13 +83,13 @@ def main():
         }
 
         # now start the actual searches
-        request = requests.get('http://www.bookfinder.com/search/', params=payload)
+        request = requests.get('https://www.bookfinder.com/search/', params=payload)
 
         # select the first result from the list and get that page
         parser = html.fromstring(request.text)
 
 
-        request = requests.get("http:" + parser.xpath('//*[@id="bd"]/ul[1]/li[1]/span/a/@href')[0])
+        request = requests.get(parser.xpath('//*[@id="bd"]/ul[1]/li[1]/span/a/@href')[0])
 
         # using some xpath magic, get the useful stuff from the page
         parser = html.fromstring(request.text)
@@ -110,10 +110,10 @@ def main():
                 newseller = newseller[58:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
                 logger.log(10, "parsed seller as %s", newseller)
 
-                newlink = "http:" + parser.xpath(
+                newlink = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[1]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
                 logger.log(10, "parsed link as %s", newlink)
-                newlink = shorten(newlink)
+                newlink = shorten(newlink).decode('utf-8')
                 logger.log(10, "shortened link")
 
                 logger.info('\tNew: %s at %s - %s', newprice, newseller, newlink)
@@ -136,10 +136,10 @@ def main():
                 usedseller = usedseller[58:].partition('.')[0].replace('_', ' ').partition(' ')[0].capitalize()
                 logger.log(10, "parsed seller pt. 2")
 
-                usedlink = "http:" + parser.xpath(
+                usedlink = parser.xpath(
                     '//*[@id="bd"]/table/tr/td[5]/table/tr[%s]/td[4]/div/span/a/@href' % i)[0]
                 logger.log(10, "parsed link as %s", newlink)
-                usedlink = shorten(usedlink)
+                usedlink = shorten(usedlink).decode('utf-8')
                 logger.log(10, "shortened link")
 
                 logger.info('\tUsed: %s at %s - %s', usedprice, usedseller, usedlink)
@@ -156,7 +156,7 @@ def shorten(link):
         'url': link
     }
     # is.gd is used because it doesn't require auth/is free/no ads
-    return requests.get('http://is.gd/create.php', params=params).content
+    return requests.get('https://is.gd/create.php', params=params).content
 
 def close(*args):
     """Handles sigint/unexpected program exit"""
