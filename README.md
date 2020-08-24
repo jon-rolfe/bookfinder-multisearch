@@ -3,16 +3,16 @@ A *very* quickly hacked together tool to search bookfinder.com for a whole file
 worth of books rather than just one at a time. Why? Because this semester I have
 a ridiculous number of books to buy and copy-pasting gets boring.
 
-Update for 2017: As it turns out, I have a ridiculous number of books to buy
-*every* semester.
-
 # Installation
-bookfinder-multisearch is written for Python 2.7. It requires:
-* Python 2.7.13 or greater
+bookfinder-multisearch is working as of 3.8.5. It requires:
+* Python >=3.8.5
 * Requests
 * lxml
 * argparse
 * Possibly some assembly; your mileage may vary.
+
+These can be installed quickly with:
+> pip install -r requirements.txt
 
 # Usage
 Lay out your list like this:
